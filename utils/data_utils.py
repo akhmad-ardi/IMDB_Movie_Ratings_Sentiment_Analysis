@@ -8,14 +8,14 @@ class DocumentSentimentDataset(Dataset):
     INDEX2LABEL = {1: 'positive', 0: 'negative'}
     NUM_LABELS = 2
     
-    def load_dataset(self, path): 
-        df = pd.read_csv(path, sep='\t', header=None)
-        df.columns = ['text','label']
-        df['label'] = df['label'].apply(lambda lab: self.LABEL2INDEX[lab])
-        return df
+    # def load_dataset(self, path): 
+    #     df = pd.read_csv(path, sep='\t', header=None)
+    #     df.columns = ['text','label']
+    #     df['label'] = df['label'].apply(lambda lab: self.LABEL2INDEX[lab])
+    #     return df
     
-    def __init__(self, dataset_path, tokenizer, no_special_token=False, *args, **kwargs):
-        self.data = self.load_dataset(dataset_path)
+    def __init__(self, df, tokenizer, no_special_token=False, *args, **kwargs):
+        self.data = df
         self.tokenizer = tokenizer
         self.no_special_token = no_special_token
     
