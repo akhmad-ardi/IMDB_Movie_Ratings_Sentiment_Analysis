@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 from torch.utils.data import Dataset, DataLoader
+from nltk.corpus import stopwords
 
 class DocumentSentimentDataset(Dataset):
     # Static constant variable
@@ -22,7 +23,12 @@ class DocumentSentimentDataset(Dataset):
     def __getitem__(self, index):
         data = self.data.loc[index,:]
         text, label = data['text'], data['label']
+        
+        stop_words = set(stopwords.words('english'))
+
+        text = ' '.join([word for word in text.split() if word.lower() not in stop_words])
         subwords = self.tokenizer.encode(text, add_special_tokens=not self.no_special_token)
+        
         return np.array(subwords), np.array(label), data['text']
     
     def __len__(self):
