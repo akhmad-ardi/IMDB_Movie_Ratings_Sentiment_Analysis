@@ -15,10 +15,11 @@ class DocumentSentimentDataset(Dataset):
     #     df['label'] = df['label'].apply(lambda lab: self.LABEL2INDEX[lab])
     #     return df
     
-    def __init__(self, df, tokenizer, no_special_token=False, *args, **kwargs):
+    def __init__(self, df, tokenizer, no_special_token=False, max_seq_len=512, *args, **kwargs):
         self.data = df
         self.tokenizer = tokenizer
         self.no_special_token = no_special_token
+        self.max_seq_len = max_seq_len
     
     def __getitem__(self, index):
         data = self.data.loc[index,:]
@@ -27,8 +28,12 @@ class DocumentSentimentDataset(Dataset):
         stop_words = set(stopwords.words('english'))
 
         text = ' '.join([word for word in text.split() if word.lower() not in stop_words])
-        subwords = self.tokenizer.encode(text, add_special_tokens=not self.no_special_token)
-        
+        subwords = self.tokenizer.encode(text, 
+                                        add_special_tokens=not self.no_special_token,         
+                                        max_length=self.max_seq_len, # Enforce max_seq_len here
+                                        truncation=True, # Truncate if exceeding max_seq_len
+                                        padding='max_length')# Pad to max_seq_len
+
         return np.array(subwords), np.array(label), data['text']
     
     def __len__(self):
